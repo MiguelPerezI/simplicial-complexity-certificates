@@ -1,0 +1,93 @@
+{
+  "scaffold": [
+    15,
+    16,
+    31,
+    35,
+    38,
+    55,
+    64,
+    68,
+    103,
+    105,
+    110,
+    114,
+    127,
+    130,
+    131,
+    162,
+    173,
+    174,
+    175,
+    223,
+    263,
+    265,
+    294,
+    303,
+    307,
+    320,
+    326,
+    328,
+    366,
+    370,
+    375,
+    378,
+    396,
+    406,
+    472
+  ],
+  "candidates": 465,
+  "walks": 128,
+  "r": 0.1,
+  "rows": [
+    {
+      "walk": "paper walk (ghost_kernel)",
+      "M": 2000,
+      "successes": 4,
+      "seconds": 7.4375559159961995,
+      "median_steps": 1993
+    },
+    {
+      "walk": "paper walk (ghost_kernel)",
+      "M": 8000,
+      "successes": 193,
+      "seconds": 32.286479068003246,
+      "median_steps": 5554
+    },
+    {
+      "walk": "paper walk (ghost_kernel)",
+      "M": 40000,
+      "successes": 345,
+      "seconds": 126.39032668499567,
+      "median_steps": 12689
+    },
+    {
+      "walk": "optimized LocalSearch (ls_kernel)",
+      "M": 250,
+      "successes": 48,
+      "seconds": 1.7182041280029807,
+      "median_steps": 228
+    },
+    {
+      "walk": "optimized LocalSearch (ls_kernel)",
+      "M": 1000,
+      "successes": 338,
+      "seconds": 6.685125882999273,
+      "median_steps": 651
+    },
+    {
+      "walk": "optimized LocalSearch (ls_kernel)",
+      "M": 2000,
+      "successes": 346,
+      "seconds": 11.977582875988446,
+      "median_steps": 892
+    },
+    {
+      "walk": "optimized LocalSearch (ls_kernel)",
+      "M": 8000,
+      "successes": 351,
+      "seconds": 35.7677616209985,
+      "median_steps": 1013
+    }
+  ]
+}
