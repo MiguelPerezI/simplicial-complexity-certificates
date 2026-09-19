@@ -1,0 +1,4 @@
+# GitHub rejects any file over 100 MB.
+# The S^8 starcover results exceed that (cover.txt ~145 MB, certificate.md ~138 MB),
+# so they live on disk only. Recompute or host them externally (e.g. Git LFS) if needed.
+results/starcovers/s8_starcover/
