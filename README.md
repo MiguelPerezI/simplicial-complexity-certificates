@@ -1,3 +1,40 @@
+# Verified certificate archive
+
+The six machine-readable certificate directories under
+`results/chain-first-annealer/` can be audited without a GPU or third-party
+Python packages:
+
+```bash
+python3 audit/verify_all.py --check
+```
+
+This command independently rebuilds each triangulation, checks every planner
+and covering, and compares file hashes with [audit/manifest.json](audit/manifest.json).
+CI runs the same check. For an intentional data update, first run
+`python3 audit/verify_all.py` and review the regenerated manifest.
+
+The bundled checker is copied from
+[chain-first-annealer at 9f818f8](https://github.com/MiguelPerezI/chain-first-annealer/tree/9f818f87d6763f9c42989a23f6d84a96506dd59e/opti/src).
+Its exact revision, source path and checksum are recorded in
+[audit/upstream.json](audit/upstream.json), with its MIT license in `audit/LICENSE`.
+The search algorithm and reproduction scripts live in that separate repository;
+this archive does not bundle the annealer. Other narrative artifacts are not
+claimed as audited by this six-certificate manifest.
+
+For an individual archived result:
+
+```bash
+python3 audit/independent_check.py results/chain-first-annealer/s4_k3_v2
+```
+
+Search timings in the manifest are historical reported values. These audits do
+not repeat the GPU searches or establish optimality or publication priority.
+Unknown generating revisions are left null rather than inferred from the
+current checkout. Original result files are preserved.
+
+The manual below uses paths relative to the original search project's `opti/`
+working directory; archive paths use `results/chain-first-annealer/<run>`.
+
 # Practical Manual: Reading and Using the Motion-Planner Certificates
 
 This manual explains how to read and use the certificate artifacts produced by

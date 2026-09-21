@@ -1,0 +1,553 @@
+{
+  "schema_version": 1,
+  "auditor": {
+    "repository": "https://github.com/MiguelPerezI/chain-first-annealer",
+    "revision": "9f818f87d6763f9c42989a23f6d84a96506dd59e",
+    "path": "opti/src/independent_check.py",
+    "sha256": "6f9ebe0bb0dbb7902dc2f98236bbf9929b2abae8d1e4cf598f475ba1c270711a",
+    "scope": "Auditor source provenance, not the generating revision of historical searches."
+  },
+  "scope": "Checks saved certificates, not GPU performance, search replay, novelty or optimality. Historical generating commits remain null when unrecorded.",
+  "certificates": [
+    {
+      "path": "results/chain-first-annealer/cube_k3_guided",
+      "audit": "passed",
+      "sha256": {
+        "cover.txt": "952c8d3d25f209c14560d1cda377f80b956f6e68f5812b436d0e9ab1d42fb9e2",
+        "planners.txt": "3cfc8837944027ebb8e6e725c257572b23a671fe5a69bba8243d1c227a601dca",
+        "summary.json": "a040978ca92021e3bc2cfb1b8b17cad8c441e5a9591662d23bd7b6f31d5412c5"
+      },
+      "complex": {
+        "name": "cube boundary (8 vertices, 12 triangles)",
+        "nv": 8,
+        "ngrid": 64,
+        "num_facets": 864,
+        "facets": [
+          [
+            0,
+            3,
+            7
+          ],
+          [
+            0,
+            4,
+            7
+          ],
+          [
+            1,
+            2,
+            6
+          ],
+          [
+            1,
+            5,
+            6
+          ],
+          [
+            0,
+            1,
+            5
+          ],
+          [
+            0,
+            4,
+            5
+          ],
+          [
+            2,
+            3,
+            7
+          ],
+          [
+            2,
+            6,
+            7
+          ],
+          [
+            4,
+            5,
+            6
+          ],
+          [
+            4,
+            6,
+            7
+          ],
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            2,
+            3
+          ]
+        ]
+      },
+      "n_domains": 3,
+      "domain_sizes": [
+        482,
+        236,
+        146
+      ],
+      "chain_lengths": [
+        5,
+        5,
+        4
+      ],
+      "params": {
+        "complex": "cube",
+        "k": 3,
+        "cmax": 16,
+        "S": 4096,
+        "iters": 5000,
+        "epochs": 60,
+        "T0": 0.6,
+        "T1": 0.03,
+        "beta": 5.0,
+        "gamma": 0.5,
+        "pcopy": 0.5,
+        "seed": 84,
+        "ptrack": 0.3,
+        "guide": 1.0,
+        "tournament_every": 2,
+        "tournament_frac": 0.25,
+        "time_limit": 900.0,
+        "outdir": "results/cube_k3_guided",
+        "no_stop": false,
+        "init": "results/cube_k3_v2/summary.json"
+      },
+      "reported_search_elapsed_s": 303.76973879399975,
+      "generating_commit": null
+    },
+    {
+      "path": "results/chain-first-annealer/s2_k3_v2",
+      "audit": "passed",
+      "sha256": {
+        "cover.txt": "f5eb640bf441bc751a850bea4d0620415ecffb0eabddce8fe1b17043f56cd690",
+        "planners.txt": "4c3a1e961e3dced1125b8ee148a80af2ee2b1a22319492c4cfbf5b2a95dc67db",
+        "summary.json": "f6a71167b02cf87ec17b0153965ee3d8147c6a15bec6f3d40e81bdd2729a9ea7"
+      },
+      "complex": {
+        "name": "∂Δ³ (S²)",
+        "nv": 4,
+        "ngrid": 16,
+        "num_facets": 96,
+        "facets": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            1,
+            3
+          ],
+          [
+            0,
+            2,
+            3
+          ],
+          [
+            1,
+            2,
+            3
+          ]
+        ]
+      },
+      "n_domains": 3,
+      "domain_sizes": [
+        54,
+        29,
+        13
+      ],
+      "chain_lengths": [
+        7,
+        3,
+        4
+      ],
+      "params": {
+        "complex": "s2",
+        "k": 3,
+        "cmax": 20,
+        "S": 4096,
+        "iters": 20000,
+        "epochs": 400,
+        "T0": 0.6,
+        "T1": 0.03,
+        "beta": 5.0,
+        "gamma": 0.5,
+        "pcopy": 0.5,
+        "seed": 51,
+        "ptrack": 0.3,
+        "guide": 0.0,
+        "tournament_every": 2,
+        "tournament_frac": 0.25,
+        "time_limit": 120.0,
+        "outdir": "results/s2_k3_v2",
+        "no_stop": false,
+        "init": null
+      },
+      "reported_search_elapsed_s": 21.941544444009196,
+      "generating_commit": null
+    },
+    {
+      "path": "results/chain-first-annealer/s3_k3_v2",
+      "audit": "passed",
+      "sha256": {
+        "cover.txt": "643ca2eadc86c691f539e4c4d8c9e4124416111616ad124b5ce6ea089c7c29bb",
+        "planners.txt": "d1bae36423fe3399cb2a90c873b00dbf12c5f9a55d6d7e7430a6655bf2c1a1b1",
+        "summary.json": "57fdca0453fba48eb05dd8295b85a82c1cb54d64d5fc52677c2d041f148b765c"
+      },
+      "complex": {
+        "name": "∂Δ⁴ (S³)",
+        "nv": 5,
+        "ngrid": 25,
+        "num_facets": 500,
+        "facets": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            0,
+            1,
+            2,
+            4
+          ],
+          [
+            0,
+            1,
+            3,
+            4
+          ],
+          [
+            0,
+            2,
+            3,
+            4
+          ],
+          [
+            1,
+            2,
+            3,
+            4
+          ]
+        ]
+      },
+      "n_domains": 3,
+      "domain_sizes": [
+        309,
+        130,
+        61
+      ],
+      "chain_lengths": [
+        7,
+        8,
+        5
+      ],
+      "params": {
+        "complex": "s3",
+        "k": 3,
+        "cmax": 40,
+        "S": 4096,
+        "iters": 20000,
+        "epochs": 400,
+        "T0": 0.6,
+        "T1": 0.03,
+        "beta": 5.0,
+        "gamma": 0.5,
+        "pcopy": 0.5,
+        "seed": 52,
+        "ptrack": 0.3,
+        "guide": 0.0,
+        "tournament_every": 2,
+        "tournament_frac": 0.25,
+        "time_limit": 300.0,
+        "outdir": "results/s3_k3_v2",
+        "no_stop": false,
+        "init": null
+      },
+      "reported_search_elapsed_s": 152.5652047110052,
+      "generating_commit": null
+    },
+    {
+      "path": "results/chain-first-annealer/s4_k3_v2",
+      "audit": "passed",
+      "sha256": {
+        "cover.txt": "bbf048a29b19a2a4b7ccaedb206be9ccecb18546f9f014848e8ab89e93ff498f",
+        "planners.txt": "409c3e78179ddbd9da3638402cd65ddd9c1c985e1fd7529a096fdc985dca98a9",
+        "summary.json": "d60174d163c86667832dd7c40af65d20c79629c6fd3a32bfb0a529d664d5d970"
+      },
+      "complex": {
+        "name": "∂Δ⁵ (S⁴)",
+        "nv": 6,
+        "ngrid": 36,
+        "num_facets": 2520,
+        "facets": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        ]
+      },
+      "n_domains": 3,
+      "domain_sizes": [
+        1634,
+        653,
+        233
+      ],
+      "chain_lengths": [
+        11,
+        10,
+        7
+      ],
+      "params": {
+        "complex": "s4",
+        "k": 3,
+        "cmax": 40,
+        "S": 4096,
+        "iters": 20000,
+        "epochs": 400,
+        "T0": 0.6,
+        "T1": 0.03,
+        "beta": 5.0,
+        "gamma": 0.5,
+        "pcopy": 0.5,
+        "seed": 61,
+        "ptrack": 0.3,
+        "guide": 0.0,
+        "tournament_every": 2,
+        "tournament_frac": 0.25,
+        "time_limit": 600.0,
+        "outdir": "results/s4_k3_v2",
+        "no_stop": false,
+        "init": null
+      },
+      "reported_search_elapsed_s": 786.9292419249978,
+      "generating_commit": null
+    },
+    {
+      "path": "results/chain-first-annealer/s5_k3_v2",
+      "audit": "passed",
+      "sha256": {
+        "cover.txt": "41fa4e945c3a037e8ef081e04c1a2894b1a5d88c62a97586f96a398062203edd",
+        "planners.txt": "7268c120f05ce6f6891b4d33fe0346fafbbfe5a62d53d82fac97ae076e8ec8d8",
+        "summary.json": "06b71c51405095f8f872ff4573bc60fbaffdc5b054a267fce028ae8951467fc5"
+      },
+      "complex": {
+        "name": "∂Δ⁶ (S⁵)",
+        "nv": 7,
+        "ngrid": 49,
+        "num_facets": 12348,
+        "facets": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            6
+          ],
+          [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6
+          ],
+          [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6
+          ],
+          [
+            0,
+            1,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        ]
+      },
+      "n_domains": 3,
+      "domain_sizes": [
+        7061,
+        4239,
+        1048
+      ],
+      "chain_lengths": [
+        9,
+        5,
+        4
+      ],
+      "params": {
+        "complex": "s5",
+        "k": 3,
+        "cmax": 16,
+        "S": 4096,
+        "iters": 5000,
+        "epochs": 400,
+        "T0": 0.6,
+        "T1": 0.03,
+        "beta": 5.0,
+        "gamma": 0.5,
+        "pcopy": 0.5,
+        "seed": 71,
+        "ptrack": 0.3,
+        "guide": 0.0,
+        "tournament_every": 2,
+        "tournament_frac": 0.25,
+        "time_limit": 10800.0,
+        "outdir": "results/s5_k3_v2",
+        "no_stop": false,
+        "init": null
+      },
+      "reported_search_elapsed_s": 2026.2954141969967,
+      "generating_commit": null
+    },
+    {
+      "path": "results/chain-first-annealer/wedge_k3_v2",
+      "audit": "passed",
+      "sha256": {
+        "cover.txt": "d486f44b35aa72d664f242b9e94f2aabd31e5783739573e80777400bc1ac29a4",
+        "planners.txt": "30ae530bb0e354c026f93e9fa18e020136a6dc8b4bdf3ecb8ba266a69fe31b9b",
+        "summary.json": "64c1f99d19b6f61e1b1ceb9c7340132e74a3c6cf1666c9ad47ba32b73c7ca5b9"
+      },
+      "complex": {
+        "name": "wedge of two circles",
+        "nv": 4,
+        "ngrid": 16,
+        "num_facets": 50,
+        "facets": [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      },
+      "n_domains": 3,
+      "domain_sizes": [
+        18,
+        16,
+        16
+      ],
+      "chain_lengths": [
+        2,
+        5,
+        5
+      ],
+      "params": {
+        "complex": "wedge",
+        "k": 3,
+        "cmax": 16,
+        "S": 4096,
+        "iters": 5000,
+        "epochs": 60,
+        "T0": 0.6,
+        "T1": 0.03,
+        "beta": 5.0,
+        "gamma": 0.5,
+        "pcopy": 0.5,
+        "seed": 71,
+        "ptrack": 0.3,
+        "guide": 0.0,
+        "tournament_every": 2,
+        "tournament_frac": 0.25,
+        "time_limit": 300.0,
+        "outdir": "results/wedge_k3_v2",
+        "no_stop": false,
+        "init": null
+      },
+      "reported_search_elapsed_s": 40.81040150700005,
+      "generating_commit": null
+    }
+  ]
+}
