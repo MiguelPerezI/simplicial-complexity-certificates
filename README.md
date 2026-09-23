@@ -1,6 +1,6 @@
 # Verified certificate archive
 
-The six machine-readable certificate directories under
+The seven machine-readable certificate directories under
 `results/chain-first-annealer/` can be audited without a GPU or third-party
 Python packages:
 
@@ -19,7 +19,7 @@ Its exact revision, source path and checksum are recorded in
 [audit/upstream.json](audit/upstream.json), with its MIT license in `audit/LICENSE`.
 The search algorithm and reproduction scripts live in that separate repository;
 this archive does not bundle the annealer. Other narrative artifacts are not
-claimed as audited by this six-certificate manifest.
+claimed as audited by this seven-certificate manifest.
 
 For an individual archived result:
 

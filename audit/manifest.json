@@ -478,6 +478,132 @@
       "generating_commit": null
     },
     {
+      "path": "results/chain-first-annealer/s6_k3_chain_first_continuation_01",
+      "audit": "passed",
+      "sha256": {
+        "cover.txt": "19d348efb2c6eb04767300d1ff80b61a40f70651b3c2f359eabf9b2b237a5ffc",
+        "planners.txt": "7afdbdeb8ab98fae78aff0cf25a56fc52589f6796fe4ab60fb48759fd71fc238",
+        "summary.json": "07dc99a0bb46e12fc5a5b3b260fd98acdea91f91e541275520a243ad660161d2"
+      },
+      "complex": {
+        "name": "∂Δ⁷ (S⁶)",
+        "nv": 8,
+        "ngrid": 64,
+        "num_facets": 59136,
+        "facets": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            7
+          ],
+          [
+            0,
+            1,
+            2,
+            3,
+            4,
+            6,
+            7
+          ],
+          [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7
+          ],
+          [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ],
+          [
+            0,
+            1,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ]
+      },
+      "n_domains": 3,
+      "domain_sizes": [
+        44909,
+        11451,
+        2776
+      ],
+      "chain_lengths": [
+        10,
+        9,
+        7
+      ],
+      "params": {
+        "complex": "s6",
+        "k": 3,
+        "cmax": 56,
+        "S": 256,
+        "iters": 750,
+        "epochs": 4,
+        "T0": 0.6,
+        "T1": 0.03,
+        "beta": 5.0,
+        "gamma": 0.5,
+        "pcopy": 0.5,
+        "seed": 608,
+        "ptrack": 0.3,
+        "guide": 24.0,
+        "guide_max": 96.0,
+        "tournament_every": 2,
+        "tournament_frac": 0.25,
+        "time_limit": null,
+        "outdir": "/home/jovyan/chain-first-annealer/opti/results/s6_k3_chain_first_continuation_01/rung02",
+        "require_cover": true,
+        "no_stop": false,
+        "init": "/home/jovyan/chain-first-annealer/opti/results/s6_k3_chain_first_continuation_01/rung01/summary.json"
+      },
+      "reported_search_elapsed_s": 924.5322336312383,
+      "generating_commit": "77ea89c1f75ab3805ce839f979a1e53374fcff55"
+    },
+    {
       "path": "results/chain-first-annealer/wedge_k3_v2",
       "audit": "passed",
       "sha256": {
