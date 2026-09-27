@@ -8,11 +8,13 @@ For a directory produced by main.py (cover.txt + planners.txt), checks:
      (K auto-detected from the facet count in cover.txt: 18 = ∂Δ²/circle,
      50 = the wedge of two circles, 54 = the barycenter triangle,
      96 = ∂Δ³/S², 500 = ∂Δ⁴/S³, 864 = the cube boundary,
+     1536 = the 8-vertex minimal Klein bottle,
      1176 = the 7-vertex Császár torus) and
      asserts the vertex lists printed in cover.txt match facet-for-facet;
      for the torus it also re-proves the surface identity (closed, links
-     single 6-cycles, orientable, chi = 0), and for the cube that the mesh
-     is a closed surface with chi = 2, hence S²;
+     single 6-cycles, orientable, chi = 0), for the Klein bottle that the mesh
+     is a closed non-orientable surface with chi = 0, hence K^2, and for the
+     cube that the mesh is a closed surface with chi = 2, hence S²;
   2. cover — the domains are pairwise disjoint and cover all facets;
   3. planners — every chain starts at pi1, ends at pi2, every map is
      simplicial on the domain, and consecutive maps are 1-contiguous
@@ -219,6 +221,395 @@ def check_sphere_surface(name, KF, nv_expect, ne_expect):
           f"cycle, chi = 2 -- a closed surface, hence (chi = 2) the sphere S²")
 
 
+def klein_facets():
+    """The vertex-minimal triangulation of the Klein bottle: 8 vertices 0..7,
+    16 triangles, f-vector (8, 24, 16), chi = 0.  It is the "242" member of
+    Cervone's classification of the six combinatorially-distinct 8-vertex
+    triangulations of K^2 (Vertex-Minimal Simplicial Immersions of the Klein
+    Bottle in Three Space, Figure 5.10 rectangle diagram), relabelled
+    A,B,...,H -> 0,1,...,7.  Listed in the same order as gpu_sc.build("klein")
+    — the staircase enumeration of KxK depends on the facet order and on each
+    facet's vertex order, and Product sorts within a facet while preserving
+    the order of facets."""
+    return [(0, 1, 2), (1, 2, 6), (0, 2, 4), (0, 4, 6),
+            (0, 3, 6), (0, 1, 5), (1, 3, 5), (0, 5, 7),
+            (0, 3, 7), (1, 3, 7), (2, 3, 5), (2, 3, 6),
+            (2, 4, 5), (4, 5, 7), (1, 4, 7), (1, 4, 6)]
+
+
+def mobius_facets():
+    """The vertex-minimal triangulation of the Möbius band: 5 vertices 0..4,
+    5 triangles {i, i+1, i+2} (mod 5), f-vector (5, 10, 5), chi = 0.  The
+    1-skeleton is K5: the 5 consecutive edges (i, i+1) are the interior
+    (each in 2 triangles, the central circle), the 5 pentagram edges
+    (i, i+2) are the boundary (each in 1, together the single 5-cycle
+    0-2-4-1-3).  Unique up to relabelling (exhaustive search: 12 labelings,
+    Aut = D5).  Listed in the same order as gpu_sc.build("mobius") AFTER
+    Product's within-facet sort — i.e. [(0,1,2), (1,2,3), (2,3,4), (0,3,4),
+    (0,1,4)] — since the staircase enumeration of KxK depends on the facet
+    order and on each facet's vertex order, and Product sorts within a
+    facet while preserving the order of facets."""
+    return [(0, 1, 2), (1, 2, 3), (2, 3, 4), (0, 3, 4), (0, 1, 4)]
+
+
+def check_mobius(tri):
+    """Re-prove that these 5 triangles on 5 vertices triangulate the Möbius
+    band, from the list alone:
+
+    every pair of vertices lies in at most two triangles and every edge in
+    exactly 1 (boundary) or 2 (interior) triangles (2-manifold with
+    boundary), the boundary edges form a SINGLE simple cycle (one boundary
+    circle), each vertex link is a single path (boundary vertex) or cycle
+    (interior vertex) with the two notions agreeing, chi = 5 - 10 + 5 = 0,
+    and NO coherent orientation exists (non-orientable).  A non-orientable
+    surface with chi = 0 and ONE boundary circle IS the Möbius band
+    (classification: chi = 2 - k - b, so k = 1, b = 1; the orientable
+    alternative with chi = 0 and b = 1 is the annulus).  Minimality (5
+    vertices) follows from E = 3V - b, b <= V, E <= C(V,2): 2V <= C(V,2),
+    and uniqueness up to relabelling by exhaustive search over the
+    C(10,5) candidate lists on 5 vertices.
+    """
+    assert len(tri) == 5 and len(set(tri)) == 5, "not 5 distinct triangles"
+    tri = [tuple(sorted(t)) for t in tri]   # claims are order-invariant
+    V = sorted({v for t in tri for v in t})
+    assert V == list(range(5)), "vertices must be exactly 0..4"
+    cnt = {}
+    for t in tri:
+        for e in combinations(t, 2):
+            cnt[e] = cnt.get(e, 0) + 1
+    assert len(cnt) == 10, f"1-skeleton must have 10 edges, has {len(cnt)}"
+    assert all(c in (1, 2) for c in cnt.values()), \
+        "not a manifold: some edge is not in exactly 1 or 2 triangles"
+    bnd = {e for e, c in cnt.items() if c == 1}
+    assert len(bnd) == 5, "boundary must be 5 edges"
+    # the boundary edges form ONE simple cycle: every vertex on it has
+    # boundary-degree 2 and walking it returns after exactly 5 steps
+    bnd = sorted(bnd)
+    deg = {}
+    for a, b in bnd:
+        deg[a] = deg.get(a, 0) + 1
+        deg[b] = deg.get(b, 0) + 1
+    assert all(d == 2 for d in deg.values()) and len(deg) == 5, \
+        "boundary edges are not one simple 5-cycle"
+    start, prev, u, walked = bnd[0][0], bnd[0][0], bnd[0][1], 1
+    while u != start:
+        opts = [b if a == u else a for a, b in bnd if a == u or b == u]
+        nxt = [x for x in opts if x != prev]
+        assert len(opts) == 2 and len(nxt) == 1, "boundary walk branches"
+        prev, u = u, nxt[0]
+        walked += 1
+        assert walked <= 5, "boundary walk does not close"
+    assert walked == 5, "boundary is not a single cycle"
+    for v in V:                        # links: single path (boundary) or cycle
+        nb = {u: set() for u in V if u != v}
+        for t in tri:
+            if v in t:
+                a, b = [x for x in t if x != v]
+                nb[a].add(b)
+                nb[b].add(a)
+        nb = {u: s for u, s in nb.items() if s}
+        degs = [len(s) for s in nb.values()]
+        ends = [u for u, s in nb.items() if len(s) == 1]
+        assert all(d <= 2 for d in degs) and len(ends) in (0, 2), \
+            f"link of vertex {v} is not a path or cycle"
+        if ends:                        # path: walk end to end
+            prev, u, walked = None, ends[0], 0
+            while u != ends[1] or walked == 0:
+                nxt = [x for x in nb[u] if x != prev]
+                assert len(nxt) == 1, f"link of vertex {v} is not a single path"
+                prev, u = u, nxt[0]
+                walked += 1
+                assert walked <= len(nb), f"link of vertex {v} does not close"
+        else:                          # cycle: one step off the start, then walk
+            s0 = min(nb)
+            prev, u, walked = s0, min(nb[s0]), 1
+            while u != s0:
+                nxt = [x for x in nb[u] if x != prev]
+                assert len(nxt) == 1, f"link of vertex {v} is not a single cycle"
+                prev, u = u, nxt[0]
+                walked += 1
+                assert walked <= len(nb), f"link of vertex {v} does not close"
+        assert walked == (len(nb) - 1 if ends else len(nb)), \
+            f"link of vertex {v}: walked {walked} steps over {len(nb)} neighbours"
+        assert (v in deg) == bool(ends), \
+            f"vertex {v}: path link <=> boundary vertex mismatch"
+    assert 5 - 10 + 5 == 0
+    valence = [sum(1 for t in tri if v in t) for v in V]
+    assert valence == [3] * 5, f"valence vector {valence} != (3,3,3,3,3)"
+    # orientability: sign the triangles so every INTERIOR edge is traversed
+    # in opposite directions by its two triangles.  This MUST fail here
+    # (the Möbius band is non-orientable); propagation runs over the
+    # interior edges, which form the central circle.
+    d = [{(t[0], t[1]), (t[1], t[2]), (t[2], t[0])} for t in tri]
+    who = {}
+    for i, dd in enumerate(d):
+        for e in dd:
+            who.setdefault(e, []).append(i)
+    sgn, orientable = [None] * 5, True
+    for st in range(5):
+        if sgn[st] is not None:
+            continue
+        sgn[st] = 1
+        stack = [st]
+        while stack:
+            i = stack.pop()
+            for a, b in d[i]:
+                if cnt[(min(a, b), max(a, b))] != 2:
+                    continue        # boundary edge: no constraint
+                for j in who.get((b, a), ()):
+                    if j != i:
+                        if sgn[j] is None:
+                            sgn[j] = sgn[i]
+                            stack.append(j)
+                        elif sgn[j] != sgn[i]:
+                            orientable = False
+                for j in who.get((a, b), ()):
+                    if j != i:
+                        if sgn[j] is None:
+                            sgn[j] = -sgn[i]
+                            stack.append(j)
+                        elif sgn[j] != -sgn[i]:
+                            orientable = False
+    assert not orientable, \
+        "a coherent orientation exists: this would be an annulus"
+    return True
+
+
+def check_klein(tri):
+    """Re-prove that these 16 triangles on 8 vertices triangulate the Klein
+    bottle, from the list alone:
+
+    every pair of vertices lies in at most two triangles and every edge in
+    exactly 2 (closed surface), each vertex link is a single cycle (no
+    singularities), chi = 8 - 24 + 16 = 0, and NO coherent orientation of the
+    triangles exists (the surface is non-orientable).  A closed
+    non-orientable surface with chi = 0 IS the Klein bottle K^2 (the
+    classification of closed surfaces: the orientable alternative with
+    chi = 0 would be the torus).  Minimality (8 vertices) is Cervone's
+    theorem, quoted here: V >= 7 from V^2 - 7V + 6*chi >= 0, and V = 7 is
+    excluded because a 7-vertex K^2 would have 1-skeleton K7, contradicting
+    Franklin's theorem that K^2 is 6-colourable.
+    """
+    assert len(tri) == 16 and len(set(tri)) == 16, "not 16 distinct triangles"
+    V = sorted({v for t in tri for v in t})
+    assert V == list(range(8)), "vertices must be exactly 0..7"
+    cnt = {}
+    for t in tri:
+        for e in combinations(t, 2):
+            cnt[e] = cnt.get(e, 0) + 1
+    assert len(cnt) == 24, f"1-skeleton must have 24 edges, has {len(cnt)}"
+    assert all(v == 2 for v in cnt.values()), \
+        "not a closed surface: some pair is not in exactly 2 triangles"
+    valence = []
+    for v in V:                        # links are single cycles
+        adj = {u: set() for u in V if u != v}
+        for t in tri:
+            if v in t:
+                a, b = [x for x in t if x != v]
+                adj[a].add(b)
+                adj[b].add(a)
+        nb = {u: s for u, s in adj.items() if s}
+        assert all(len(s) == 2 for s in nb.values()), \
+            f"link of vertex {v} is not 2-regular"
+        start = min(nb)
+        prev, u = start, min(nb[start])   # one step in one direction
+        walked = 1
+        while u != start:
+            nxt = [x for x in nb[u] if x != prev]
+            assert len(nxt) == 1, f"link of vertex {v} is not a cycle"
+            prev, u = u, nxt[0]
+            walked += 1
+            assert walked <= len(nb), f"link of vertex {v} is not a single cycle"
+        assert walked == len(nb), \
+            f"link of vertex {v}: walked {walked} of {len(nb)} neighbours"
+        valence.append(len(nb))
+    assert sorted(valence, reverse=True) == [7, 7, 6, 6, 6, 6, 5, 5], \
+        f"valence vector {sorted(valence, reverse=True)} != (7,7,6,6,6,6,5,5)"
+    assert 8 - 24 + 16 == 0
+    # orientability: try to sign the triangles so that every shared edge is
+    # traversed in opposite directions by the two triangles sharing it.
+    # This MUST fail here (K^2 is non-orientable); the same propagation
+    # succeeds in check_torus.
+    d = [{(t[0], t[1]), (t[1], t[2]), (t[2], t[0])} for t in tri]
+    who = {}
+    for i, dd in enumerate(d):
+        for e in dd:
+            who.setdefault(e, []).append(i)
+    sgn = [None] * 16
+    orientable = True
+    for st in range(16):
+        if sgn[st] is not None:
+            continue
+        sgn[st] = 1
+        stack = [st]
+        while stack:
+            i = stack.pop()
+            for a, b in d[i]:
+                for j in who.get((b, a), ()):   # j runs against i: same sign
+                    if j != i:
+                        if sgn[j] is None:
+                            sgn[j] = sgn[i]
+                            stack.append(j)
+                        elif sgn[j] != sgn[i]:
+                            orientable = False
+                for j in who.get((a, b), ()):   # j runs with i: flipped sign
+                    if j != i:
+                        if sgn[j] is None:
+                            sgn[j] = -sgn[i]
+                            stack.append(j)
+                        elif sgn[j] != -sgn[i]:
+                            orientable = False
+    assert not orientable, "a coherent orientation exists: this would be a torus"
+    return True
+
+
+def s1xw_facets():
+    """S¹×(S¹∨S¹) as the staircase product of the repo's circle ∂Δ² =
+    {(0,1),(0,2),(1,2)} with the repo's wedge K₄−{2,3} =
+    {(0,1),(0,2),(0,3),(1,2),(1,3)}:  grid vertex (a,b) has id a*4+b, so the
+    12 product vertices are 0..11 and the 3x5 squares of the product cell
+    structure split into 30 triangles by the monotone-path (staircase) rule.
+    This is the polyhedral product (S¹,*)^P₃ (P₃ the flag path 1-2-3), i.e. the
+    toric complex of the smallest connected flag complex beyond the edge
+    (whose toric complex is the torus): an aspherical space, the classifying
+    space of the right-angled Artin group Z x F₂.  Listed in the same order
+    as gpu_sc.build("s1xw") — the staircase enumeration of KxK depends on
+    the facet order and on each facet's vertex order, and Product sorts
+    within a facet while preserving the order of facets."""
+    return [(0, 1, 5), (0, 4, 5), (0, 2, 6),
+            (0, 4, 6), (0, 3, 7), (0, 4, 7),
+            (1, 2, 6), (1, 5, 6), (1, 3, 7),
+            (1, 5, 7), (0, 1, 9), (0, 8, 9),
+            (0, 2, 10), (0, 8, 10), (0, 3, 11),
+            (0, 8, 11), (1, 2, 10), (1, 9, 10),
+            (1, 3, 11), (1, 9, 11), (4, 5, 9),
+            (4, 8, 9), (4, 6, 10), (4, 8, 10),
+            (4, 7, 11), (4, 8, 11), (5, 6, 10),
+            (5, 9, 10), (5, 7, 11), (5, 9, 11)]
+
+
+def _snf(M):
+    """Nonzero diagonal d1|d2|... of the Smith normal form of integer matrix
+    M (naive Euclidean algorithm — the matrices here are tiny)."""
+    A = [row[:] for row in M if any(row)]
+    if not A:
+        return []
+    ncols = len(A[0])
+    diag = []
+    while A and ncols:
+        bi, bj = min(((i, j) for i in range(len(A)) for j in range(ncols)
+                      if A[i][j]), key=lambda ij: abs(A[ij[0]][ij[1]]))
+        A[0], A[bi] = A[bi], A[0]
+        for r in A:
+            r[0], r[bj] = r[bj], r[0]
+        while True:
+            moved = False
+            if any(A[i][0] % A[0][0] for i in range(1, len(A))):
+                i = next(i for i in range(1, len(A)) if A[i][0] % A[0][0])
+                q = A[i][0] // A[0][0]
+                A[i] = [a - q * b for a, b in zip(A[i], A[0])]
+                A[0], A[i] = A[i], A[0]
+                moved = True
+            for i in range(1, len(A)):
+                q = A[i][0] // A[0][0]
+                if q:
+                    A[i] = [a - q * b for a, b in zip(A[i], A[0])]
+                    moved = True
+            if any(A[0][j] % A[0][0] for j in range(1, ncols)):
+                j = next(j for j in range(1, ncols) if A[0][j] % A[0][0])
+                q = A[0][j] // A[0][0]
+                for r in A:
+                    r[j] -= q * r[0]
+                for r in A:
+                    r[0], r[j] = r[j], r[0]
+                moved = True
+            for j in range(1, ncols):
+                q = A[0][j] // A[0][0]
+                if q:
+                    for r in A:
+                        r[j] -= q * r[0]
+                    moved = True
+            if not moved:
+                break
+        if not all(A[i][j] % A[0][0] == 0
+                   for i in range(1, len(A)) for j in range(1, ncols)):
+            i, j = next((i, j) for i in range(1, len(A)) for j in range(1, ncols)
+                        if A[i][j] % A[0][0])
+            for r in A:
+                r[0] += r[j]
+            continue
+        diag.append(abs(A[0][0]))
+        A = [r[1:] for r in A[1:] if any(r[1:])]
+        ncols -= 1
+    diag.sort()
+    return diag
+
+
+def check_s1xw(tri):
+    """Re-prove that these 30 triangles on 12 vertices triangulate
+    S¹×(S¹∨S¹), from the list alone:
+
+    (1) structural: the list IS the staircase triangulation of the product
+        ∂Δ² x (K₄−{2,3}) — re-derived here from first principles and compared
+        facet-by-facet.  Since ||∂Δ²|| = S¹ (3 edges, b1 = 1) and the wedge
+        graph has b1 = 5 − 4 + 1 = 2 (S¹∨S¹), the realization of a staircase
+        product is the product of the realizations.
+    (2) numerical: chi = 12 − 42 + 30 = 0 and integral homology
+        H0 = Z, H1 = Z³ (no torsion), H2 = Z² — exactly Kunneth's answer
+        for S¹ × (S¹∨S¹): b1 = 1 + 2, b2 = 1*2.
+    The space is aspherical (it is B(Z x F₂), the classifying space of the
+    right-angled Artin group of the flag path P₃), and TC = 4 exactly:
+    zero-divisor cup length 3 over Z/2 and TC(X×Y) <= TC(X)+TC(Y)−1 = 2+3−1.
+    """
+    assert len(tri) == 30 and len(set(tri)) == 30, "not 30 distinct triangles"
+    V = sorted({v for t in tri for v in t})
+    assert V == list(range(12)), "vertices must be exactly 0..11"
+    # (1) re-derive the staircase product circle x wedge, independently
+    C3 = [(0, 1), (0, 2), (1, 2)]
+    W2 = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)]
+    derived = set()
+    for s0 in C3:
+        for s1 in W2:
+            for mask in range(1 << 2):        # p = q = 1: two monotone paths
+                if bin(mask).count("1") != 1:
+                    continue                  # popcount must be q = 1
+                i = j = 0
+                tet = [(s0[0], s1[0])]
+                for b in range(2):
+                    if (mask >> b) & 1:
+                        j += 1
+                    else:
+                        i += 1
+                    tet.append((s0[i], s1[j]))
+                derived.add(frozenset(a * 4 + b for a, b in tet))
+    assert derived == {frozenset(t) for t in tri}, \
+        "the list is not the staircase product of the circle and the wedge"
+    # (2) chi and integral homology via Smith normal form
+    edges = sorted({tuple(sorted(e)) for t in tri for e in combinations(t, 2)})
+    assert len(edges) == 42, f"{len(edges)} edges, expected 42"
+    assert 12 - 42 + 30 == 0
+    d1 = [[(-1 if v == e[0] else 1) if v in e else 0 for e in edges]
+          for v in V]
+    d2 = []
+    for e in edges:
+        col = []
+        for t in tri:
+            if e[0] in t and e[1] in t:
+                p, q = t.index(e[0]), t.index(e[1])
+                col.append(1 if (p - q) % 3 == 1 else -1)
+            else:
+                col.append(0)
+        d2.append(col)
+    s1, s2 = _snf(d1), _snf(d2)
+    assert all(d == 1 for d in s1) and len(s1) == 11, "H0 != Z: not connected"
+    b1 = 42 - len(s1) - len(s2)
+    tors = [d for d in s2 if d > 1]
+    b2 = 30 - len(s2)
+    assert b1 == 3 and not tors, f"H1 = Z^{b1}+{tors}, expected Z^3"
+    assert b2 == 2, f"H2 = Z^{b2}, expected Z^2"
+    return True
+
+
 def dodeca_facets():
     """The dodecahedron boundary: 20 vertices 0..19, 12 pentagonal faces, each
     fanned from one of its vertices into 3 triangles -> 36 triangles, f-vector
@@ -263,8 +654,15 @@ def detect_k(resdir):
         return "barycenter triangle (Δ² split by its barycenter)", bary_facets()
     if nf == 864:
         return "cube boundary (8 vertices, 12 triangles)", cube_facets()
+    if nf == 1536:
+        return ("Klein bottle (8 vertices, 16 triangles, Cervone 242)",
+                klein_facets())
     if nf == 7776:
         return "dodecahedron boundary (20 vertices, 36 triangles)", dodeca_facets()
+    if nf == 150:
+        return "Möbius band (5 vertices, 5 triangles)", mobius_facets()
+    if nf == 5400:
+        return "S¹×(S¹∨S¹) (polyhedral product (S¹,*)^P₃)", s1xw_facets()
     for n in (2, 3, 4, 5, 6, 7, 8, 9):   # ∂Δ^n x ∂Δ^n: n = 6 (12348) .. 9 (5883020) facets
         if expected_num_facets(n) == nf:
             return {2: "∂Δ² (S¹)", 3: "∂Δ³ (S²)", 4: "∂Δ⁴ (S³)", 5: "∂Δ⁵ (S⁴)",
@@ -273,7 +671,8 @@ def detect_k(resdir):
     raise SystemExit(
         f"cover.txt reports {nf} facets — this auditor only rebuilds "
         f"the wedge of two circles (50), the barycenter triangle (54), "
-        f"the cube boundary (864), "
+        f"the cube boundary (864), the minimal Klein bottle (1536), "
+        f"the Möbius band (150), S¹×(S¹∨S¹) (5400), "
         f"∂Δ^n x ∂Δ^n for n = 2 (18), 3 (96), 4 (500), 5 (2520), 6 (12348), "
         f"7 (59136), 8 (277992), 9 (1287000), 10 (5883020) facets and the "
         f"Császár torus (1176); above n = 10 no facet-by-facet cover.txt "
@@ -389,6 +788,39 @@ def main(resdir):
         nf_expected = len(KF) ** 2 * 6
         n = None
         floor = 3   # SC_strict >= TC(S^2) = 2, same argument as the cube
+    elif name.startswith("Klein"):
+        assert len(KF) == 16, "not sixteen triangles"
+        check_klein(KF)   # re-proves ||K|| = K^2 from the facet list alone
+        nf_expected = len(KF) ** 2 * 6   # 256 triangle pairs x C(4,2) paths
+        n = None
+        floor = 5   # SC_strict >= TC(K^2) = 4 (Cohen-Vandembroucq 2017),
+        # so at least 5 domains in any system of PL motion planners
+        print(f"K = {name}: 16 triangles re-proved a Klein bottle "
+              f"(closed, links single cycles, no coherent orientation, chi = 0)")
+    elif name.startswith("Möbius"):
+        assert len(KF) == 5, "not five triangles"
+        check_mobius(KF)  # re-proves ||K|| = Möbius band from the facet list alone
+        nf_expected = len(KF) ** 2 * 6   # 25 triangle pairs x C(4,2) paths
+        n = None
+        floor = 2   # ||K|| deformation-retracts onto S^1, so nd >= TC = 2:
+        # like ∂Δ² (whose minimal cover is 2 domains, results/circle_probe3),
+        # this floor only rules out a 1-domain cover; 2 domains is the
+        # topological optimum, and whether the annealer finds it on the
+        # richer 25-vertex grid is the experiment.
+        print(f"K = {name}: 5 triangles re-proved a Möbius band "
+              f"(one boundary cycle, path links, no coherent orientation, chi = 0)")
+    elif name.startswith("S¹×"):
+        assert len(KF) == 30, "not thirty triangles"
+        check_s1xw(KF)  # staircase structure + homology re-proved from the list alone
+        nf_expected = len(KF) ** 2 * 6   # 900 triangle pairs x C(4,2) paths
+        n = None
+        floor = 4   # TC(S¹×(S¹∨S¹)) = 4 exactly: zero-divisor cup length 3
+        # over Z/2, and TC(X×Y) <= TC(X)+TC(Y)-1 = 2+3-1 (TC(S¹) = 2,
+        # TC(S¹∨S¹) = 3).  So >= 4 domains in ANY system of PL motion
+        # planners; whether 4 (SC_strict = 3 = TC-1) is attainable at
+        # subdivision level 0 is what the annealer run is testing.
+        print(f"K = {name}: 30 triangles re-proved the staircase product "
+              f"S¹×(S¹∨S¹) (chi = 0, H1 = Z³, H2 = Z²; aspherical, B(Z×F₂))")
     else:
         # ∂Δ^n: each maximal facet has n vertices (k_facets returns
         # n-subsets), so n = len(KF[0]) — NOT len(KF[0]) - 1.
