@@ -23,6 +23,8 @@ extra configuration.
 ## Conventions
 
 - One plan per experiment or validation, written before the run.
+- When using `writing-plans`, start from `templates/plan-experimento.md`: copy
+  its frontmatter to the top of the plan so it shows up on the board.
 - Success and failure criteria are fixed before launching.
 - When the run ends, update `status`, Result and Conclusion in the same file.
 - A discarded plan stays, with the reason.
