@@ -2,9 +2,9 @@
   "schema_version": 1,
   "auditor": {
     "repository": "https://github.com/MiguelPerezI/chain-first-annealer",
-    "revision": "9f818f87d6763f9c42989a23f6d84a96506dd59e",
+    "revision": "732ed6ff77968088523b2940374f69079d8f6d23",
     "path": "opti/src/independent_check.py",
-    "sha256": "6f9ebe0bb0dbb7902dc2f98236bbf9929b2abae8d1e4cf598f475ba1c270711a",
+    "sha256": "c54331644bf8628d79cbfd1582e950f2a8d7921f54daece3e70b9c48b0a35fd1",
     "scope": "Auditor source provenance, not the generating revision of historical searches."
   },
   "scope": "Checks saved certificates, not GPU performance, search replay, novelty or optimality. Historical generating commits remain null when unrecorded.",
