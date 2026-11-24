@@ -1,5 +1,10 @@
 # Chain-first annealer — verified covers (publishable set)
 
+The table below lists the original first-phase sphere certificates. The
+full list of archived covers (star covers, the surface descents, the
+Möbius and icosahedron covers) and the paper claim each one supports is in
+the [top-level README](../../README.md#what-is-here).
+
 Complete systems of piecewise-linear motion planners found by the
 chain-first GPU annealer (`gpu_sc.py`) with the corrected energy
 (β = 5, γ = 0.5, tracking moves p = 0.3), independently audited

@@ -1,11 +1,16 @@
 # Verified certificate archive
 
-The seven machine-readable certificate directories under
-`results/chain-first-annealer/` can be audited without a GPU or third-party
-Python packages:
+Explicit covers of `K × K` by contiguity domains (systems of piecewise-linear
+motion planners) supporting the paper *Explicit covers and rigid obstructions
+for simplicial complexity: from spheres to surfaces* (M. Perez, J. Flores).
+Every cover is stored as data: `cover.txt` (the domains, facet by facet),
+`planners.txt` (the contiguity chain of each domain, every map as a full vertex
+table) and `summary.json` (complex, domain sizes, chain lengths, parameters).
+
+The whole archive can be audited without a GPU or third-party Python packages:
 
 ```bash
-python3 audit/verify_all.py --check
+python3 audit/verify_all.py --check     # about 1.5 min, peak RAM about 4 GB
 ```
 
 This command independently rebuilds each triangulation, checks every planner
@@ -13,18 +18,45 @@ and covering, and compares file hashes with [audit/manifest.json](audit/manifest
 CI runs the same check. For an intentional data update, first run
 `python3 audit/verify_all.py` and review the regenerated manifest.
 
+## What is here
+
+| Paper claim | Directory (under `results/chain-first-annealer/` unless noted) | Domains |
+|---|---|---|
+| `SC_strict(∂Δ²) = 1` | `circle_probe3` | 2 |
+| `SC_strict(S¹∨S¹) = 2` | `wedge_k3_v2` | 3 |
+| `∂Δ³ … ∂Δ⁷` (S² … S⁶) by three domains (annealer) | `s2_k3_v2`, `s3_k3_v2`, `s4_k3_v2`, `s5_k3_v2`, `s6_k3_chain_first_continuation_01` | 3 |
+| cube boundary, `SC_strict = 2` | `cube_k3_guided` | 3 |
+| Möbius band, `SC_strict = 2` (and the k = 4, 5 covers) | `mobius_k3_sat`, `mobius_k3_cegar_L8`, `mobius_k4_from_k5`, `mobius_k5` | 3, 3, 4, 5 |
+| icosahedron boundary, `SC_strict ≤ 3` (exact completion) | `icosa_k4_exact` | 4 |
+| icosahedron star-seeded descent k = 23 → 5 | `icosa_k23` … `icosa_k6`, `icosa_k5_v2` | 23 … 5 |
+| hemi-icosahedron (RP²) descent, `SC_strict ≤ 5` | `rp2_k11_cont`, `rp2_k10` … `rp2_k6` | 10 … 6 |
+| Klein bottle descent, `SC_strict ≤ 9` | `klein_k15_8233_v2`, `klein_k14` … `klein_k10` | 15 … 10 |
+| star covers, `SC_strict ≤ ρ − 1` (Table 1 of the paper) | `*_starcover*` (∂Δ² … ∂Δ⁹, cube, icosahedron, dodecahedron, Möbius, RP², Császár torus, Klein) | ρ |
+| hemicube descent, `SC_strict ≤ 6` | `internal/chain-first-annealer/hemicube_k20` … `hemicube_k7` | 20 … 7 |
+| hemi-octahedron, `SC_strict ≤ 7` | `internal/chain-first-annealer/hemi_octa_k8` | 8 |
+| hemi-dodecahedron descent, `SC_strict ≤ 6` | `internal/chain-first-annealer/hemi_dodeca_k14` … `hemi_dodeca_k7` | 14 … 7 |
+
+Everything under `results/` passes the independent auditor. The three
+subdivided `RP²` models under `internal/` (hemicube, hemi-octahedron,
+hemi-dodecahedron, with their star covers) are not yet rebuilt by the auditor,
+whose complex table is keyed by facet count (864 and 1536 collide with the cube
+and the Klein bottle, 1944 is absent); they were verified map by map by the
+search's own verifier and are hashed in the manifest as `internal verifier only`.
+The ∂Δ⁹ star cover (`s8_starcover`, 1 287 000 facets) is stored xz-compressed;
+`verify_all.py` decompresses it to a temporary directory for the audit.
+
 The bundled checker is copied from
-[chain-first-annealer at 9f818f8](https://github.com/MiguelPerezI/chain-first-annealer/tree/9f818f87d6763f9c42989a23f6d84a96506dd59e/opti/src).
+[chain-first-annealer at 922fac7](https://github.com/MiguelPerezI/chain-first-annealer/tree/922fac7b5f026dc89b5bbc4ecf53ca7b87dea52b/opti/src).
 Its exact revision, source path and checksum are recorded in
 [audit/upstream.json](audit/upstream.json), with its MIT license in `audit/LICENSE`.
-The search algorithm and reproduction scripts live in that separate repository;
-this archive does not bundle the annealer. Other narrative artifacts are not
-claimed as audited by this seven-certificate manifest.
+The search algorithm, the rigid-subcomplex lower-bound tools and the
+reproduction scripts live in that separate repository; this archive does not
+bundle them.
 
 For an individual archived result:
 
 ```bash
-python3 audit/independent_check.py results/chain-first-annealer/s4_k3_v2
+python3 audit/independent_check.py results/chain-first-annealer/icosa_k4_exact
 ```
 
 Search timings in the manifest are historical reported values. These audits do
@@ -39,7 +71,7 @@ working directory; archive paths use `results/chain-first-annealer/<run>`.
 
 This manual explains how to read and use the certificate artifacts produced by
 `gpu_sc.py` in the `results/` directories of the optimization repository
-(`~/Downloads/figs_piso/opti`): how domains and covers partition the
+([chain-first-annealer/opti](https://github.com/MiguelPerezI/chain-first-annealer/tree/main/opti)): how domains and covers partition the
 configuration space, how the planner chains encode motion, how to actually move
 a robot from a start point to a goal point using the printed tables, and what
 the `@` symbol means. Everything here matches what the auditor

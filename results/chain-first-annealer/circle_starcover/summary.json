@@ -1,0 +1,77 @@
+{
+  "complex": {
+    "name": "\u2202\u0394\u00b2 (S\u00b9)",
+    "nv": 3,
+    "ngrid": 9,
+    "num_facets": 18,
+    "facets": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        1,
+        2
+      ]
+    ]
+  },
+  "n_domains": 3,
+  "sc_strict_bound": 2,
+  "n_verified": 3,
+  "all_domains_verified": true,
+  "domain_sizes": [
+    8,
+    6,
+    4
+  ],
+  "chain_lengths": [
+    2,
+    2,
+    2
+  ],
+  "domains": [
+    [
+      0,
+      1,
+      2,
+      3,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      4,
+      5,
+      12,
+      13,
+      16,
+      17
+    ],
+    [
+      10,
+      11,
+      14,
+      15
+    ]
+  ],
+  "method": "star(v) x star(w) product domains (star_cover.py)",
+  "rectangles": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      2
+    ]
+  ]
+}

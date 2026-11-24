@@ -8,8 +8,8 @@ For a directory produced by main.py (cover.txt + planners.txt), checks:
      (K auto-detected from the facet count in cover.txt: 18 = ∂Δ²/circle,
      50 = the wedge of two circles, 54 = the barycenter triangle,
      96 = ∂Δ³/S², 500 = ∂Δ⁴/S³, 864 = the cube boundary,
-     1536 = the 8-vertex minimal Klein bottle,
-     1176 = the 7-vertex Császár torus) and
+     1536 = the 8-vertex minimal Klein bottle, 2400 = the icosahedron
+     boundary, 1176 = the 7-vertex Császár torus) and
      asserts the vertex lists printed in cover.txt match facet-for-facet;
      for the torus it also re-proves the surface identity (closed, links
      single 6-cycles, orientable, chi = 0), for the Klein bottle that the mesh
@@ -250,6 +250,76 @@ def mobius_facets():
     order and on each facet's vertex order, and Product sorts within a
     facet while preserving the order of facets."""
     return [(0, 1, 2), (1, 2, 3), (2, 3, 4), (0, 3, 4), (0, 1, 4)]
+
+
+def rp2_facets():
+    """The vertex-minimal triangulation of the real projective plane (the
+    hemi-icosahedron): 6 vertices 0..5, 10 triangles, f-vector (6, 15, 10),
+    chi = 1.  Listed in the same order as gpu_sc.build("rp2") AFTER Product's
+    within-facet sort, since the staircase enumeration of KxK depends on the
+    facet order and on each facet's vertex order."""
+    return [(0, 1, 2), (0, 2, 3), (0, 3, 4), (0, 4, 5), (0, 1, 5),
+            (1, 2, 4), (2, 3, 5), (1, 3, 4), (2, 4, 5), (1, 3, 5)]
+
+
+def check_rp2(tri):
+    """Re-prove that these 10 triangles on 6 vertices triangulate RP², from
+    the list alone: every edge lies in exactly 2 triangles (closed surface,
+    15 edges, 1-skeleton K6), every vertex link is a single 5-cycle (no
+    singular vertices), chi = 6 - 15 + 10 = 1, and NO coherent orientation
+    exists.  A closed surface with chi = 1 is non-orientable with one
+    crosscap, i.e. RP² (classification: chi = 2 - k)."""
+    assert len(tri) == 10 and len(set(tri)) == 10, "not 10 distinct triangles"
+    tri = [tuple(sorted(t)) for t in tri]
+    V = sorted({v for t in tri for v in t})
+    assert V == list(range(6)), "vertices must be exactly 0..5"
+    cnt = {}
+    for t in tri:
+        for e in combinations(t, 2):
+            cnt[e] = cnt.get(e, 0) + 1
+    assert len(cnt) == 15, f"1-skeleton must have 15 edges, has {len(cnt)}"
+    assert all(c == 2 for c in cnt.values()), \
+        "not a closed surface: some edge is not in exactly 2 triangles"
+    for v in V:
+        link = [tuple(x for x in t if x != v) for t in tri if v in t]
+        adj = {}
+        for a, b in link:
+            adj.setdefault(a, []).append(b)
+            adj.setdefault(b, []).append(a)
+        assert all(len(n) == 2 for n in adj.values()), f"link of {v} is not a cycle"
+        start = next(iter(adj))
+        prev, u, steps = start, adj[start][0], 1
+        while u != start:
+            nxt = [w for w in adj[u] if w != prev]
+            prev, u, steps = u, nxt[0], steps + 1
+        assert steps == len(adj) == 5, f"link of {v} is not a single 5-cycle"
+    assert len(V) - len(cnt) + len(tri) == 1, "chi != 1"
+    # orientation: propagate signs across shared edges; a conflict means none exists
+    sgn = {0: 1}
+    stack = [0]
+    orientable = True
+
+    def edge_dir(t, a, b):
+        i, j = t.index(a), t.index(b)
+        return 1 if (j - i) % 3 == 1 else -1
+
+    while stack:
+        i = stack.pop()
+        for j, t in enumerate(tri):
+            if j == i:
+                continue
+            common = set(tri[i]) & set(t)
+            if len(common) != 2:
+                continue
+            a, b = sorted(common)
+            need = -sgn[i] * edge_dir(tri[i], a, b) * edge_dir(t, a, b)
+            if j not in sgn:
+                sgn[j] = need
+                stack.append(j)
+            elif sgn[j] != need:
+                orientable = False
+    assert not orientable, "a coherent orientation exists: chi = 1 would be impossible"
+    return True
 
 
 def check_mobius(tri):
@@ -628,6 +698,95 @@ def dodeca_facets():
             (1, 2, 7), (0, 1, 7), (0, 5, 7), (0, 5, 6)]
 
 
+def icosa_facets():
+    """The icosahedron boundary: 12 vertices 0..11, 20 triangles -- the
+    antiprism construction: apex 0 over the top pentagon 1..5, apex 11
+    under the bottom pentagon 6..10, side band (t_i, t_{i+1}, b_i) and
+    (t_{i+1}, b_i, b_{i+1}) with indices mod 5.  f-vector (12, 30, 20),
+    chi = 2: a triangulated S^2, and the double cover of the
+    hemi-icosahedron `rp2` (re-proved in check_icosa).  Listed in the same
+    order as gpu_sc.build("icosa") AFTER Product's within-facet sort -- the
+    staircase enumeration of KxK depends on the facet order and on each
+    facet's vertex order, and Product sorts within a facet while preserving
+    the order of facets."""
+    return [(0, 1, 2), (0, 2, 3), (0, 3, 4), (0, 4, 5), (0, 1, 5),
+            (6, 7, 11), (7, 8, 11), (8, 9, 11), (9, 10, 11), (6, 10, 11),
+            (1, 2, 6), (2, 6, 7), (2, 3, 7), (3, 7, 8), (3, 4, 8),
+            (4, 8, 9), (4, 5, 9), (5, 9, 10), (1, 5, 10), (1, 6, 10)]
+
+
+def check_icosa(tri):
+    """Re-prove that these 20 triangles on 12 vertices triangulate S^2 as
+    the boundary of the icosahedron, from the list alone:
+
+    a closed surface (every edge in exactly two triangles, every vertex
+    link a single cycle) with chi = 12 - 30 + 20 = 2, hence S^2, that is
+    5-regular (every vertex in exactly 5 triangles) -- and 5-regularity
+    pins the type: 5V = 2E and 3F = 2E force (V, E, F) = (12, 30, 20)
+    exactly, so the dual is a 3-regular planar graph whose twelve faces
+    are all pentagons on 20 vertices -- the dodecahedron, the unique such
+    graph (the unique smallest fullerene, C_20, quoted here) -- and the
+    dual of the dodecahedron is the icosahedron.  Finally the antipodal
+    involution is recovered from the list: each vertex has a unique vertex
+    at 1-skeleton distance 3 (the 5-5-1 distance partition of the
+    icosahedral graph), that map is a free simplicial action, and the
+    quotient relabelled by first appearance is exactly the `rp2`
+    hemi-icosahedron -- this K is the double cover of the repo's
+    projective-plane complex."""
+    assert len(tri) == 20 and len(set(tri)) == 20, "not 20 distinct triangles"
+    tri = [tuple(sorted(t)) for t in tri]   # claims are order-invariant
+    V = sorted({v for t in tri for v in t})
+    assert V == list(range(12)), "vertices must be exactly 0..11"
+    check_sphere_surface("the icosahedron boundary", tri, 12, 30)
+    valence = [sum(1 for t in tri if v in t) for v in V]
+    assert valence == [5] * 12, f"valence vector {valence} is not all-5"
+    # antipodes: BFS to depth 2 leaves exactly one unseen vertex per orbit
+    # side (the icosahedron's 5-5-1 distance partition)
+    adj = {v: set() for v in V}
+    for t in tri:
+        for a, b in combinations(t, 2):
+            adj[a].add(b)
+            adj[b].add(a)
+    antip = {}
+    for v in V:
+        seen = {v}
+        frontier = [v]
+        for _ in range(2):
+            nxt = []
+            for u in frontier:
+                for w in adj[u]:
+                    if w not in seen:
+                        seen.add(w)
+                        nxt.append(w)
+            frontier = nxt
+        far = [w for w in V if w not in seen]
+        assert len(far) == 1, f"vertex {v}: {len(far)} vertices at distance 3"
+        antip[v] = far[0]
+    assert all(antip[antip[v]] == v for v in V), \
+        "the farthest-vertex map is not an involution"
+    assert all(antip[a] != b for t in tri for a, b in combinations(t, 2)), \
+        "an antipodal vertex pair spans an edge: the action is not free"
+    img = {tuple(sorted(antip[x] for x in t)) for t in tri}
+    assert img == set(tri), "the antipodal map does not preserve the triangles"
+    lab, quot = {}, set()
+    for t in tri:                      # quotient: label orbits by first appearance
+        o = []
+        for v in t:
+            orb = tuple(sorted((v, antip[v])))
+            if orb not in lab:
+                lab[orb] = len(lab)
+            o.append(lab[orb])
+        quot.add(tuple(sorted(o)))
+    assert len(lab) == 6 and len(quot) == 10, \
+        "the quotient is not 10 triangles on 6 vertices"
+    assert quot == {tuple(sorted(t)) for t in rp2_facets()}, \
+        "the antipodal quotient is not the hemi-icosahedron (rp2)"
+    print("icosahedron identity: the 5-regular triangulated sphere (the unique "
+          "one: dual of the dodecahedron C_20), and the antipodal quotient is "
+          "exactly the `rp2` hemi-icosahedron -- K is its double cover")
+    return True
+
+
 def cube_facets():
     """The cube boundary: vertices 0..7, the six square faces {0,3,7,4},
     {1,2,6,5}, {0,1,5,4}, {2,3,7,6}, {4,5,6,7}, {0,1,2,3}, each cut along its
@@ -659,8 +818,13 @@ def detect_k(resdir):
                 klein_facets())
     if nf == 7776:
         return "dodecahedron boundary (20 vertices, 36 triangles)", dodeca_facets()
+    if nf == 2400:
+        return ("icosahedron boundary (12 vertices, 20 triangles)",
+                icosa_facets())
     if nf == 150:
         return "Möbius band (5 vertices, 5 triangles)", mobius_facets()
+    if nf == 600:
+        return "RP² (6 vertices, 10 triangles, hemi-icosahedron)", rp2_facets()
     if nf == 5400:
         return "S¹×(S¹∨S¹) (polyhedral product (S¹,*)^P₃)", s1xw_facets()
     for n in (2, 3, 4, 5, 6, 7, 8, 9):   # ∂Δ^n x ∂Δ^n: n = 6 (12348) .. 9 (5883020) facets
@@ -671,8 +835,9 @@ def detect_k(resdir):
     raise SystemExit(
         f"cover.txt reports {nf} facets — this auditor only rebuilds "
         f"the wedge of two circles (50), the barycenter triangle (54), "
-        f"the cube boundary (864), the minimal Klein bottle (1536), "
-        f"the Möbius band (150), S¹×(S¹∨S¹) (5400), "
+        f"the cube boundary (864), the icosahedron boundary (2400), "
+        f"the minimal Klein bottle (1536), "
+        f"the Möbius band (150), RP² (600), S¹×(S¹∨S¹) (5400), "
         f"∂Δ^n x ∂Δ^n for n = 2 (18), 3 (96), 4 (500), 5 (2520), 6 (12348), "
         f"7 (59136), 8 (277992), 9 (1287000), 10 (5883020) facets and the "
         f"Császár torus (1176); above n = 10 no facet-by-facet cover.txt "
@@ -722,8 +887,10 @@ def parse_planners(path, domains, nv):
             chains[cur].append(grid)
             continue
         toks = line.split()
+        # map values are K-vertex labels, which reach two digits once
+        # nv >= 10 (the icosahedron and S¹×(S¹∨S¹): labels up to 11)
         if cur is not None and grid is not None and toks and \
-                all(re.fullmatch(r"[@0-9]", t) for t in toks):
+                all(re.fullmatch(r"(@|\d+)", t) for t in toks):
             assert len(toks) == nv and len(rows) < nv, "invalid grid dimensions"
             for y, t in enumerate(toks):
                 if t != "@":
@@ -788,6 +955,15 @@ def main(resdir):
         nf_expected = len(KF) ** 2 * 6
         n = None
         floor = 3   # SC_strict >= TC(S^2) = 2, same argument as the cube
+    elif name.startswith("icosahedron"):
+        # 20 triangles x 20 triangles x C(4,2) = 6 monotone paths of a
+        # triangle pair's square cell.
+        assert len(KF) == 20, "not twenty triangles"
+        check_icosa(KF)  # re-proves ||K|| = S^2, the icosahedron boundary, from the list alone
+        nf_expected = len(KF) ** 2 * 6
+        n = None
+        floor = 3   # SC_strict >= TC(S^2) = 2 (closed, chi = 2 => S^2),
+        # same argument as the cube and dodecahedron branches
     elif name.startswith("Klein"):
         assert len(KF) == 16, "not sixteen triangles"
         check_klein(KF)   # re-proves ||K|| = K^2 from the facet list alone
@@ -797,6 +973,14 @@ def main(resdir):
         # so at least 5 domains in any system of PL motion planners
         print(f"K = {name}: 16 triangles re-proved a Klein bottle "
               f"(closed, links single cycles, no coherent orientation, chi = 0)")
+    elif name.startswith("RP²"):
+        assert len(KF) == 10, "not ten triangles"
+        check_rp2(KF)   # re-proves ||K|| = RP² from the facet list alone
+        nf_expected = len(KF) ** 2 * 6   # 100 triangle pairs x C(4,2) paths
+        n = None
+        floor = 3   # repository bracket 2 <= SC_strict(RP²) (rp2_literature_check.md)
+        print(f"K = {name}: 10 triangles re-proved RP² "
+              f"(closed, links 5-cycles, no coherent orientation, chi = 1)")
     elif name.startswith("Möbius"):
         assert len(KF) == 5, "not five triangles"
         check_mobius(KF)  # re-proves ||K|| = Möbius band from the facet list alone
