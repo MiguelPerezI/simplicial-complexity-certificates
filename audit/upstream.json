@@ -1,7 +1,7 @@
 {
   "repository": "https://github.com/MiguelPerezI/chain-first-annealer",
-  "revision": "732ed6ff77968088523b2940374f69079d8f6d23",
+  "revision": "922fac7b5f026dc89b5bbc4ecf53ca7b87dea52b",
   "path": "opti/src/independent_check.py",
-  "sha256": "c54331644bf8628d79cbfd1582e950f2a8d7921f54daece3e70b9c48b0a35fd1",
+  "sha256": "3d5e395184f6ebd9b981bf0a345952c307513b9d8608fc8155684f276734cfc6",
   "scope": "Auditor source provenance, not the generating revision of historical searches."
 }

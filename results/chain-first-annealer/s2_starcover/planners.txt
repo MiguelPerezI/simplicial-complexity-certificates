@@ -1,0 +1,56 @@
+Planner chains (chain-first GPU annealer, then Algorithm 2 reduce)
+
+=== domain 0: 54 facets ===
+  reduced chain: 3 maps
+  map 0:
+    0 0 0 0
+    1 1 1 1
+    2 2 2 2
+    3 3 3 3
+  map 1:
+    0 0 0 0
+    0 0 0 0
+    0 0 0 0
+    0 0 0 0
+  map 2:
+    0 1 2 3
+    0 1 2 3
+    0 1 2 3
+    0 1 2 3
+
+=== domain 1: 30 facets ===
+  reduced chain: 3 maps
+  map 0:
+    @ 0 0 0
+    1 1 1 1
+    2 2 2 2
+    3 3 3 3
+  map 1:
+    @ 1 1 1
+    1 1 1 1
+    1 1 1 1
+    1 1 1 1
+  map 2:
+    @ 1 2 3
+    0 1 2 3
+    0 1 2 3
+    0 1 2 3
+
+=== domain 2: 12 facets ===
+  reduced chain: 3 maps
+  map 0:
+    @ 0 0 0
+    1 @ 1 1
+    2 2 2 2
+    3 3 3 3
+  map 1:
+    @ 2 2 2
+    2 @ 2 2
+    2 2 2 2
+    2 2 2 2
+  map 2:
+    @ 1 2 3
+    0 @ 2 3
+    0 1 2 3
+    0 1 2 3
+
